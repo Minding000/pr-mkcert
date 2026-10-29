@@ -339,6 +339,7 @@ func (m *mkcert) checkPlatform() bool {
 	}
 
 	_, err := m.caCert.Verify(x509.VerifyOptions{})
+	log.Print(fmt.Errorf("DEBUG VERIFY ERROR: %v", err))
 	return err == nil
 }
 
@@ -383,11 +384,14 @@ func commandWithSudo(cmd ...string) *exec.Cmd {
 	if u, err := user.Current(); err == nil && u.Uid == "0" {
 		return exec.Command(cmd[0], cmd[1:]...)
 	}
-	if !binaryExists("sudo") {
+	if binaryExists("doas") {
+		return exec.Command("doas", append([]string{"--"}, cmd...)...)
+	} else if binaryExists("sudo") {
+		return exec.Command("sudo", append([]string{"--prompt=Sudo password:", "--"}, cmd...)...)
+	} else {
 		sudoWarningOnce.Do(func() {
-			log.Println(`Warning: "sudo" is not available, and mkcert is not running as root. The (un)install operation might fail. ⚠️`)
+			log.Println(`Warning: "sudo"/"doas" is not available, and mkcert is not running as root. The (un)install operation might fail. ⚠️`)
 		})
 		return exec.Command(cmd[0], cmd[1:]...)
 	}
-	return exec.Command("sudo", append([]string{"--prompt=Sudo password:", "--"}, cmd...)...)
 }

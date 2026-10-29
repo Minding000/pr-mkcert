@@ -15,7 +15,9 @@ import (
 )
 
 var (
-	FirefoxProfiles = []string{os.Getenv("HOME") + "/.mozilla/firefox/*",
+	FirefoxProfiles = []string{
+		os.Getenv("HOME") + "/.config/mozilla/firefox/*",
+		os.Getenv("HOME") + "/.mozilla/firefox/*",
 		os.Getenv("HOME") + "/snap/firefox/common/.mozilla/firefox/*"}
 	NSSBrowsers = "Firefox and/or Chrome/Chromium"
 
@@ -26,6 +28,8 @@ var (
 
 func init() {
 	switch {
+	case binaryExists("apk"):
+		CertutilInstallHelp = "apk add nss-tools"
 	case binaryExists("apt"):
 		CertutilInstallHelp = "apt install libnss3-tools"
 	case binaryExists("yum"):

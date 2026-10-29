@@ -19,12 +19,14 @@ var (
 	hasCertutil  bool
 	certutilPath string
 	nssDBs       = []string{
+		filepath.Join(os.Getenv("HOME"), ".local/share/pki/nssdb"),
 		filepath.Join(os.Getenv("HOME"), ".pki/nssdb"),
 		filepath.Join(os.Getenv("HOME"), "snap/chromium/current/.pki/nssdb"), // Snapcraft
 		"/etc/pki/nssdb", // CentOS 7
 	}
 	firefoxPaths = []string{
 		"/usr/bin/firefox",
+		"/usr/bin/firefox-esr",
 		"/usr/bin/firefox-nightly",
 		"/usr/bin/firefox-developer-edition",
 		"/snap/firefox",
